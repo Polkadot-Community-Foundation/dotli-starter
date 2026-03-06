@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Starter Kit</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: system-ui, sans-serif;
+                max-width: 520px;
+                margin: 0 auto;
+                padding: 2rem 1rem;
+                background: #000;
+                color: #e4e4e4;
+            }
+            h1 {
+                font-size: 1.3rem;
+                margin-bottom: 1.5rem;
+            }
+            section {
+                margin-bottom: 1.5rem;
+            }
+            section h2 {
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #888;
+                margin-bottom: 0.5rem;
+            }
+            #greeting {
+                font-size: 1.1rem;
+                min-height: 2.5rem;
+            }
+            #greeting .name {
+                font-weight: 700;
+            }
+            #greeting .addr {
+                display: block;
+                font-size: 0.75rem;
+                color: #888;
+                font-family: monospace;
+                margin-top: 2px;
+            }
+            .status {
+                font-size: 0.8rem;
+                color: #888;
+                margin-bottom: 0.5rem;
+            }
+            input {
+                width: 100%;
+                padding: 0.4rem 0.5rem;
+                border: 1px solid #333;
+                border-radius: 4px;
+                font-size: 0.85rem;
+                margin-bottom: 0.5rem;
+                background: #111;
+                color: #e4e4e4;
+            }
+            button {
+                padding: 0.5rem 1rem;
+                border: 1px solid #333;
+                border-radius: 4px;
+                background: #fff;
+                color: #000;
+                font-size: 0.85rem;
+                cursor: pointer;
+                width: 100%;
+                margin-bottom: 0.35rem;
+            }
+            button:hover:not(:disabled) {
+                background: #ccc;
+            }
+            button:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+            button.secondary {
+                background: #111;
+                color: #e4e4e4;
+            }
+            button.secondary:hover:not(:disabled) {
+                background: #222;
+            }
+            .row {
+                display: flex;
+                gap: 0.35rem;
+            }
+            .row button {
+                flex: 1;
+            }
+            #log {
+                background: #111;
+                border: 1px solid #333;
+                border-radius: 4px;
+                padding: 0.5rem;
+                min-height: 60px;
+                max-height: 200px;
+                overflow-y: auto;
+                font-family: monospace;
+                font-size: 0.7rem;
+                line-height: 1.6;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+            #log .ts {
+                color: #999;
+            }
+            #log .ok {
+                color: #16a34a;
+            }
+            #log .err {
+                color: #dc2626;
+            }
+            #log .info {
+                color: #e4e4e4;
+            }
+            #btn-clear {
+                width: auto;
+                background: #111;
+                color: #e4e4e4;
+                font-size: 0.7rem;
+                padding: 0.25rem 0.75rem;
+                margin-top: 0.35rem;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Starter Kit</h1>
+
+        <!-- Account: shows greeting once logged in, or a prompt to log in -->
+        <section>
+            <h2>Account</h2>
+            <div id="greeting">Loading...</div>
+        </section>
+
+        <!-- Connection: shows SDK status and chain info -->
+        <section>
+            <h2>Connection</h2>
+            <p class="status"><span id="status-text">Connecting...</span></p>
+            <p style="font-size: 0.85rem">Paseo Asset Hub (Testnet)</p>
+        </section>
+
+        <!-- System.remark: sign and submit an on-chain remark (waits for finalization) -->
+        <section>
+            <h2>System.remark</h2>
+            <input
+                id="remark-input"
+                type="text"
+                value="Hello from starter kit!"
+            />
+            <button id="btn-remark" disabled>Sign & Submit</button>
+        </section>
+
+        <!-- Sign raw: sign an arbitrary message without submitting on-chain -->
+        <section>
+            <h2>Sign Raw Message</h2>
+            <input id="raw-input" type="text" value="Hello from starter kit!" />
+            <button id="btn-sign-raw" class="secondary" disabled>
+                Sign Raw
+            </button>
+        </section>
+
+        <!-- Host storage: persist JSON data scoped to this app -->
+        <section>
+            <h2>Host Storage</h2>
+            <input
+                id="storage-key"
+                type="text"
+                value="demo_key"
+                placeholder="key"
+            />
+            <input
+                id="storage-value"
+                type="text"
+                value='{"hello":"world"}'
+                placeholder="JSON value"
+            />
+            <div class="row">
+                <button id="btn-stor-write" class="secondary" disabled>
+                    Write
+                </button>
+                <button id="btn-stor-read" class="secondary" disabled>
+                    Read
+                </button>
+                <button id="btn-stor-clear" class="secondary" disabled>
+                    Clear
+                </button>
+            </div>
+        </section>
+
+        <!-- Chain read: query on-chain state through the Host's managed connection -->
+        <section>
+            <h2>Chain Read</h2>
+            <button id="btn-chain-read" class="secondary" disabled>
+                Read Finalized Block
+            </button>
+        </section>
+
+        <!-- Log: timestamped output for all SDK operations -->
+        <section>
+            <h2>Log</h2>
+            <div id="log"></div>
+            <button id="btn-clear">Clear</button>
+        </section>
+
+        <script type="importmap">
+            {
+                "imports": {
+                    "@novasamatech/product-sdk": "https://esm.sh/@novasamatech/product-sdk@0.6.1",
+                    "polkadot-api": "https://esm.sh/polkadot-api@1.23.1",
+                    "polkadot-api/utils": "https://esm.sh/polkadot-api@1.23.1/utils",
+                    "polkadot-api/ws-provider": "https://esm.sh/polkadot-api@1.23.1/ws-provider"
+                }
+            }
+        </script>
+        <script type="module" src="main.js"></script>
+    </body>
+</html>

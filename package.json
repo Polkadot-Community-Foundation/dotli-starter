@@ -1,0 +1,15 @@
+{
+  "name": "triangle-starter-kit",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "python3 -m http.server -d src 8000"
+  },
+  "dependencies": {
+    "@novasamatech/product-sdk": "0.6.1",
+    "polkadot-api": "1.23.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
