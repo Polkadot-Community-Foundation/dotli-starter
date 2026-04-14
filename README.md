@@ -1,5 +1,7 @@
 # dotli Starter Template
 
+![dotli](/docs/dotlistarter.png)
+
 Simple dotli starter built with plain HTML, CSS, and JavaScript. It uses npm-installed packages and a Vite-style workflow, without React.
 
 ## Prerequisites
