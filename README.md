@@ -29,8 +29,8 @@ npm run preview
 ```
 
 Serves the built app locally from `dist/`. You can then open it either:
-- in the Polkadot Desktop under localhost:4173 
-- in Polkadot Web under https://dot.li/localhost:4173.
+- in the Polkadot Desktop under `localhost:4173` 
+- in Polkadot Web under `https://dot.li/localhost:4173`.
 
 Note:
 - For host testing, prefer `build` + `preview` or a deployed `dist/` bundle. Vite dev mode can run into host CSP restrictions.
