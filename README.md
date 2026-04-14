@@ -2,7 +2,7 @@
 
 ![dotli](/docs/dotlistarter.png)
 
-Simple dotli starter built with plain HTML, CSS, and JavaScript. It uses npm-installed packages and a Vite-style workflow, without React.
+Simple dotli starter built with plain HTML, CSS, and JavaScript. It uses npm-installed packages and a Vite-style workflow, without React. It's meant as a 0-to-1 template to get started quickly. For a much more thorough set of examples, including AI helpers, please check out https://github.com/paritytech/polkadot-apps
 
 ## Prerequisites
 
