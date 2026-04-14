@@ -28,7 +28,9 @@ Builds the production app into `dist/`.
 npm run preview
 ```
 
-Serves the built app locally from `dist/`. You can then open it in the Polkadot Desktop or under https://dot.li/localhost:4173.
+Serves the built app locally from `dist/`. You can then open it either:
+- in the Polkadot Desktop under localhost:4173 
+- in Polkadot Web under https://dot.li/localhost:4173.
 
 Note:
 - For host testing, prefer `build` + `preview` or a deployed `dist/` bundle. Vite dev mode can run into host CSP restrictions.
@@ -56,7 +58,9 @@ npm run build
 bulletin-deploy ./dist my-app00.dot
 ```
 
-Your site will be live at `https://my-app00.dot.li`.
+Your site will be live at :
+- Polkadot Desktop: `my-app00.dot`
+- Polkadot Web: `https://my-app00.dot.li`
 
 Notes:
 - `bulletin-deploy` uses `MNEMONIC` for the DotNS owner mnemonic.
