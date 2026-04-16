@@ -155,7 +155,9 @@ $btnRemark.addEventListener("click", async () => {
       log("Signing and submitting remark...");
 
       await new Promise((resolve, reject) => {
-        tx.signSubmitAndWatch(signer).subscribe({
+        tx.signSubmitAndWatch(signer, {
+          mortality: { mortal: true, period: 256 },
+        }).subscribe({
           next(event) {
             if (event.type === "txBestBlocksState" && event.found) {
               log("Remark included in best block");
