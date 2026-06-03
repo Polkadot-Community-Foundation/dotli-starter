@@ -4,6 +4,16 @@
 
 Simple dotli starter built with plain HTML, CSS, and JavaScript. It uses npm-installed packages and a Vite-style workflow, without React. It's meant as a 0-to-1 template to get started quickly. For a much more thorough set of examples, including AI helpers, please check out https://github.com/paritytech/polkadot-apps
 
+It demonstrates the new `@parity/product-sdk-host` flow against **Paseo Next v2 Asset Hub**:
+- Detect the host container (`isInsideContainer`)
+- Resolve a **product account** for the page's DotNS identifier (`getAccountsProvider`)
+- Sign a raw message (`getTruApi().signRaw`)
+- Submit a `System.remark` extrinsic via the host's chain provider (`getHostProvider` + `polkadot-api`)
+- Read finalized chain state
+- Persist a draft to app-scoped storage (`getHostLocalStorage`)
+
+The product-account flow binds signing to the DotNS identifier of the URL the host loaded. When running locally via `npm run preview`, that identifier is `localhost:4173`; when deployed via `bulletin-deploy`, it's your `<name>.dot`.
+
 ## Prerequisites
 
 - Node.js >= 18
