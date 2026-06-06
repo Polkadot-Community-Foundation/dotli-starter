@@ -16,6 +16,29 @@ const CHAIN = {
 };
 
 const STORAGE_KEY = "starter_message";
+const FAUCET_URL = "https://faucet.polkadot.io";
+
+// polkadot-api throws TxValidityError-like objects when the runtime rejects a
+// tx pre-dispatch. The shape we care about is {type: "Invalid", value: {type:
+// "Payment"}} — emitted when the signer can't pay the fee, which for a fresh
+// account just means "go top up". Some versions expose those fields on the
+// error itself; others stash the JSON in .message. Check both.
+function isInsufficientFundsError(error) {
+  if (!error) return false;
+  if (error.type === "Invalid" && error.value?.type === "Payment") return true;
+  if (typeof error.message === "string") {
+    try {
+      const parsed = JSON.parse(error.message);
+      if (parsed?.type === "Invalid" && parsed?.value?.type === "Payment") {
+        return true;
+      }
+    } catch {
+      // fall through to substring check
+    }
+    return /"Invalid"[\s\S]*"Payment"/.test(error.message);
+  }
+  return false;
+}
 
 // The dotli host binds each product to a DotNS identifier; signing calls fail
 // with PermissionDenied if the signer's identifier doesn't match the URL the
@@ -183,7 +206,15 @@ $btnRemark.addEventListener("click", async () => {
         });
       });
     } catch (error) {
-      log(`Remark failed: ${error.message}`, "err");
+      if (isInsufficientFundsError(error)) {
+        log("Remark failed: account has no balance to pay fees", "err");
+        log(
+          `Fund this account at <a href="${FAUCET_URL}" target="_blank" rel="noopener noreferrer">${FAUCET_URL}</a>, then try again.`,
+          "info",
+        );
+      } else {
+        log(`Remark failed: ${error.message}`, "err");
+      }
     } finally {
       client.destroy();
     }
