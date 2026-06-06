@@ -10,7 +10,7 @@
 
 Simple dotli starter built with plain HTML, CSS, and JavaScript. It uses npm-installed packages and a Vite-style workflow, without React. It's meant as a 0-to-1 template to get started quickly. For a much more thorough set of examples, including AI helpers, please check out https://github.com/paritytech/polkadot-apps
 
-It demonstrates the new `@parity/product-sdk-host` flow against **Paseo Next v2 Asset Hub**:
+It demonstrates the `@parity/product-sdk-host` flow against **Paseo Next v2 Asset Hub** as a default — adapt it to the network you wish to deploy on by swapping the `CHAIN` constant in `src/main.js`:
 - Detect the host container (`isInsideContainer`)
 - Resolve a **product account** for the page's DotNS identifier (`getAccountsProvider`)
 - Sign a raw message (`getTruApi().signRaw`)
