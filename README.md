@@ -71,6 +71,7 @@ Build and deploy:
 
 ```bash
 npm run build
+bulletin-deploy login # follow the instructions
 bulletin-deploy ./dist my-app00.dot
 ```
 
@@ -78,14 +79,4 @@ Your site will be live at :
 - Polkadot Desktop: `my-app00.dot`
 - Polkadot Web: `https://my-app00.dot.li`
 
-Notes:
-- `bulletin-deploy` uses `MNEMONIC` for the DotNS owner mnemonic.
-- On Paseo testnet, names like `my-app00.dot` do not require Proof of Personhood.
-- To use a different Bulletin RPC, set `BULLETIN_RPC`.
 
-Example:
-
-```bash
-export MNEMONIC="your twelve word mnemonic phrase goes here ..."
-bulletin-deploy ./dist my-app00.dot
-```
