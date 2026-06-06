@@ -51,23 +51,9 @@ Serves the built app locally from `dist/`. You can then open it either:
 Note:
 - For host testing, prefer `build` + `preview` or a deployed `dist/` bundle. Vite dev mode can run into host CSP restrictions.
 
-## Deploy
+## Deployment
 
-This starter uses [`bulletin-deploy`](https://github.com/paritytech/bulletin-deploy). The older local DotNS CLI deploy flow has been removed.
-
-### Local deploy
-
-Install `bulletin-deploy` and its IPFS prerequisite:
-
-```bash
-npm install -g bulletin-deploy
-
-# macOS
-brew install ipfs
-ipfs init
-```
-
-Build and deploy:
+You will need an already setup Polkadot Mobile and then to follow the up-to-date instructions provided by [`bulletin-deploy`](https://github.com/paritytech/bulletin-deploy).
 
 ```bash
 npm run build
