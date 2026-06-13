@@ -10,9 +10,9 @@ import { Binary, createClient } from "polkadot-api";
 import { toHex } from "polkadot-api/utils";
 
 const CHAIN = {
-  name: "Paseo Next v2 Asset Hub",
+  name: "Summit Asset Hub",
   genesis:
-    "0xbf0488dbe9daa1de1c08c5f743e26fdc2a4ecd74cf87dd1b4b1eeb99ae4ef19f",
+    "0xf388dc6d6cdf6fb77eac3c4a91f31bc0c8642b142f1a757512ab7849f9f70660",
 };
 
 const STORAGE_KEY = "starter_message";
