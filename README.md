@@ -10,7 +10,7 @@
 
 Simple dotli starter built with plain HTML, CSS, and JavaScript. It uses npm-installed packages and a Vite-style workflow, without React. It's meant as a 0-to-1 template to get started quickly. For a much more thorough set of examples, including AI helpers, please check out https://github.com/paritytech/polkadot-apps
 
-It demonstrates the `@parity/product-sdk-host` flow against **Paseo Next v2 Asset Hub** as a default — adapt it to the network you wish to deploy on by swapping the `CHAIN` constant in `src/main.js`:
+It demonstrates the `@parity/product-sdk-host` flow against the **Summit Asset Hub** as a default — adapt it to the network you wish to deploy on by swapping the `CHAIN` constant in `src/main.js`:
 - Detect the host container (`isInsideContainer`)
 - Resolve a **product account** for the page's DotNS identifier (`getAccountsProvider`)
 - Sign a raw message (`getTruApi().signRaw`)
@@ -18,7 +18,7 @@ It demonstrates the `@parity/product-sdk-host` flow against **Paseo Next v2 Asse
 - Read finalized chain state
 - Persist a draft to app-scoped storage (`getHostLocalStorage`)
 
-The product-account flow binds signing to the DotNS identifier of the URL the host loaded. When running locally via `npm run preview`, that identifier is `localhost:4173`; when deployed via `bulletin-deploy`, it's your `<name>.dot`.
+The product-account flow binds signing to the DotNS identifier of the URL the host loaded. When running locally via `npm run preview`, that identifier is `localhost:4173`; when deployed via `polkadot-app-deploy`, it's your `<name>.dot`.
 
 ## Prerequisites
 
@@ -51,18 +51,44 @@ Serves the built app locally from `dist/`. You can then open it either:
 Note:
 - For host testing, prefer `build` + `preview` or a deployed `dist/` bundle. Vite dev mode can run into host CSP restrictions.
 
-## Deployment
+## Deployment (Summit)
 
-You will need an already setup Polkadot Mobile and then to follow the up-to-date instructions provided by [`bulletin-deploy`](https://github.com/paritytech/bulletin-deploy).
+The app is published to the **Summit Bulletin chain** and bound to a `.dot` name with
+[`@polkadot-community-foundation/polkadot-app-deploy`](https://www.npmjs.com/package/@polkadot-community-foundation/polkadot-app-deploy)
+(the `polkadot-app-deploy` / `pad` CLI). The scoped package ships the `summit` env (RPCs + DotNS contract
+addresses) built in, so `--env summit` is all the chain configuration you need.
+
+### Prerequisites (one-time, per account)
+
+- A `.dot` name **registered and owned** on Summit DotNS by your deploy account.
+- That account must hold a **live Summit Bulletin storage authorization**. Authorizations are granted by the
+  Summit authorizer and **expire (~13 days)**; if an upload fails with "not authorized for Bulletin storage",
+  the authorization needs refreshing before anything else.
+
+### Deploy from your machine
 
 ```bash
 npm run build
-bulletin-deploy login # follow the instructions
-bulletin-deploy ./dist my-app00.dot
+npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.10.1
+
+# Passing --mnemonic selects DIRECT signer mode: the mnemonic account is BOTH
+# the DotNS owner and the Bulletin upload signer. On Summit only that account
+# is storage-authorized, so --mnemonic is required (do NOT use --suri, which
+# leaves uploads on the unauthorized public pool and fails).
+polkadot-app-deploy ./dist <name>.dot --env summit --mnemonic "$DOTNS_MNEMONIC"
 ```
 
-Your site will be live at :
-- Polkadot Desktop: `my-app00.dot`
-- Polkadot Web: `https://my-app00.dot.li`
+Your site will then be live at:
+- Polkadot Desktop: `<name>.dot`
+- Polkadot Web: `https://<name>.dot.li`
+
+### Deploy from CI
+
+`.github/workflows/deploy-summit.yml` runs the same flow on GitHub Actions (manual via the **Actions** tab,
+and automatically on pushes to `main` that touch app code). Configure it once:
+
+- **Repository variable** `DOTNS_DOMAIN` — the `<name>.dot` to publish to.
+- **Repository secret** `DOTNS_MNEMONIC` — the mnemonic of the account that owns `DOTNS_DOMAIN` and holds the
+  live Bulletin authorization.
 
 

@@ -1,0 +1,91 @@
+# Build the starter and publish it to the Summit Bulletin chain, bound to a
+# DotNS .dot name.
+#
+# Triggers:
+#   - manual:    Actions → "Deploy (Summit)" → Run workflow
+#   - automatic: push to main that touches app code or this workflow
+#
+# Configure once before the first run:
+#   - repo VARIABLE  DOTNS_DOMAIN   — the <name>.dot to publish to
+#   - repo SECRET    DOTNS_MNEMONIC — mnemonic of the account that OWNS
+#                                     DOTNS_DOMAIN on Summit DotNS and holds a
+#                                     LIVE Summit Bulletin storage authorization
+#
+# Notes:
+#   - Summit's bundled env has no Publisher registry, so --publish is omitted
+#     (it would be a non-fatal skip anyway).
+#   - --mnemonic selects DIRECT signer mode: that one account is both the DotNS
+#     owner and the Bulletin upload signer. On Summit only an authorized account
+#     can upload, so we never fall back to the public signer pool (--suri).
+#   - Bulletin authorizations expire (~13 days). If the deploy step fails with
+#     "not authorized for Bulletin storage", refresh the authorization (only the
+#     Summit authorizer can) before re-running.
+name: Deploy (Summit)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.mjs"
+      - ".github/workflows/deploy-summit.yml"
+
+permissions:
+  contents: read
+
+# One deploy at a time — overlapping runs sign with the same account and would
+# race its nonce.
+concurrency:
+  group: deploy-summit
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & publish → Summit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required configuration
+        env:
+          DOTNS_DOMAIN: ${{ vars.DOTNS_DOMAIN }}
+          DOTNS_MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
+        run: |
+          set -euo pipefail
+          missing=0
+          if [ -z "${DOTNS_DOMAIN:-}" ]; then
+            echo "::error::Repository variable DOTNS_DOMAIN is not set (the <name>.dot to deploy to)."
+            missing=1
+          fi
+          if [ -z "${DOTNS_MNEMONIC:-}" ]; then
+            echo "::error::Repository secret DOTNS_MNEMONIC is not set (owner of DOTNS_DOMAIN + Bulletin-authorized)."
+            missing=1
+          fi
+          [ "$missing" -eq 0 ] || exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Install polkadot-app-deploy
+        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.10.1
+
+      - name: Deploy to Summit
+        env:
+          DOTNS_DOMAIN: ${{ vars.DOTNS_DOMAIN }}
+          DOTNS_MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
+        run: |
+          set -euo pipefail
+          polkadot-app-deploy ./dist "$DOTNS_DOMAIN" \
+            --env summit \
+            --mnemonic "$DOTNS_MNEMONIC" \
+            --js-merkle
