@@ -69,7 +69,7 @@ addresses) built in, so `--env summit` is all the chain configuration you need.
 
 ```bash
 npm run build
-npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.10.1
+npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.11.0
 
 # Passing --mnemonic selects DIRECT signer mode: the mnemonic account is BOTH
 # the DotNS owner and the Bulletin upload signer. On Summit only that account
