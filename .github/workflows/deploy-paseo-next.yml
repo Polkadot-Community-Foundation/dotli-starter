@@ -1,26 +1,26 @@
-# Build the starter and publish it to the Summit Bulletin chain, bound to a
+# Build the starter and publish it to the paseo-next Bulletin chain, bound to a
 # DotNS .dot name.
 #
 # Triggers:
-#   - manual:    Actions → "Deploy (Summit)" → Run workflow
+#   - manual:    Actions → "Deploy (paseo-next)" → Run workflow
 #   - automatic: push to main that touches app code or this workflow
 #
 # Configure once before the first run:
 #   - repo VARIABLE  DOTNS_DOMAIN   — the <name>.dot to publish to
 #   - repo SECRET    DOTNS_MNEMONIC — mnemonic of the account that OWNS
-#                                     DOTNS_DOMAIN on Summit DotNS and holds a
-#                                     LIVE Summit Bulletin storage authorization
+#                                     DOTNS_DOMAIN on paseo-next DotNS and holds a
+#                                     LIVE paseo-next Bulletin storage authorization
 #
 # Notes:
-#   - Summit's bundled env has no Publisher registry, so --publish is omitted
+#   - paseo-next's bundled env has no Publisher registry, so --publish is omitted
 #     (it would be a non-fatal skip anyway).
 #   - --mnemonic selects DIRECT signer mode: that one account is both the DotNS
-#     owner and the Bulletin upload signer. On Summit only an authorized account
+#     owner and the Bulletin upload signer. On paseo-next only an authorized account
 #     can upload, so we never fall back to the public signer pool (--suri).
 #   - Bulletin authorizations expire (~13 days). If the deploy step fails with
 #     "not authorized for Bulletin storage", refresh the authorization (only the
-#     Summit authorizer can) before re-running.
-name: Deploy (Summit)
+#     paseo-next authorizer can) before re-running.
+name: Deploy (paseo-next)
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "vite.config.mjs"
-      - ".github/workflows/deploy-summit.yml"
+      - ".github/workflows/deploy-paseo-next.yml"
 
 permissions:
   contents: read
@@ -39,12 +39,12 @@ permissions:
 # One deploy at a time — overlapping runs sign with the same account and would
 # race its nonce.
 concurrency:
-  group: deploy-summit
+  group: deploy-paseo-next
   cancel-in-progress: false
 
 jobs:
   deploy:
-    name: Build & publish → Summit
+    name: Build & publish → paseo-next
     runs-on: ubuntu-latest
     steps:
       - name: Check required configuration
@@ -77,15 +77,15 @@ jobs:
         run: npm run build
 
       - name: Install polkadot-app-deploy
-        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.11.0
+        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.12.0
 
-      - name: Deploy to Summit
+      - name: Deploy to paseo-next
         env:
           DOTNS_DOMAIN: ${{ vars.DOTNS_DOMAIN }}
           DOTNS_MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
         run: |
           set -euo pipefail
           polkadot-app-deploy ./dist "$DOTNS_DOMAIN" \
-            --env summit \
+            --env paseo-next \
             --mnemonic "$DOTNS_MNEMONIC" \
             --js-merkle
